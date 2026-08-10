@@ -1,0 +1,6 @@
+{
+  "migrations": [
+    "2026_08_10_095223_create_characters_table",
+    "2026_08_10_095224_create_character_appearances_table"
+  ]
+}
