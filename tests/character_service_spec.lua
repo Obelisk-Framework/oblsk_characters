@@ -48,8 +48,14 @@ end
 --- so CharacterService (and the Character/CharacterAppearance models it
 --- drives via BaseModel:newQuery, which reads the global QueryBuilder at
 --- call time) operate on a fresh in-memory table set per test.
+---
+--- Pre-seeds an `accounts` table with rows for account ids 1 and 2
+--- (max_characters = 3 each), since CharacterService.create reads
+--- accounts.max_characters (from the separate oblsk_accounts module, not
+--- loaded here) rather than a local constant, and every test below uses
+--- one of these two account ids.
 local function withFakeDb(fn)
-    local tables = {}
+    local tables = { accounts = { { id = 1, max_characters = 3 }, { id = 2, max_characters = 3 } } }
     local original = QueryBuilder
     QueryBuilder = makeFakeQueryBuilderModule(tables)
 
@@ -95,14 +101,40 @@ test('create: different accounts do not share slot assignment', function()
     end)
 end)
 
-test('create: returns an error once CHARACTER_SLOT_LIMIT characters already exist', function()
-    withFakeDb(function()
-        for i = 1, CharacterService.CHARACTER_SLOT_LIMIT do
+test('create: returns an error once accounts.max_characters characters already exist', function()
+    withFakeDb(function(tables)
+        local maxCharacters = tables.accounts[1].max_characters
+        for i = 1, maxCharacters do
             CharacterService.create(1, { first_name = 'Char', last_name = tostring(i) })
         end
         local character, err = CharacterService.create(1, { first_name = 'One', last_name = 'Too Many' })
         eq(character, nil)
         truthy(err ~= nil, 'expected an error message')
+    end)
+end)
+
+test('create: returns an error when the account does not exist', function()
+    withFakeDb(function()
+        local character, err = CharacterService.create(999, { first_name = 'John', last_name = 'Doe' })
+        eq(character, nil)
+        truthy(err ~= nil, 'expected an error message')
+    end)
+end)
+
+test('create: a higher max_characters on one account raises its own limit without affecting others', function()
+    withFakeDb(function(tables)
+        tables.accounts[1].max_characters = 5
+        for i = 1, 5 do
+            local character = CharacterService.create(1, { first_name = 'Char', last_name = tostring(i) })
+            truthy(character ~= nil, 'expected character ' .. i .. ' to be created')
+        end
+
+        local character, err = CharacterService.create(2, { first_name = 'X', last_name = 'Y' })
+        truthy(character ~= nil, 'account 2 still has its own separate limit')
+
+        local sixth, sixthErr = CharacterService.create(1, { first_name = 'One', last_name = 'TooMany' })
+        eq(sixth, nil)
+        truthy(sixthErr ~= nil, 'expected an error once account 1 hits its raised limit')
     end)
 end)
 

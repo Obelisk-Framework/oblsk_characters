@@ -5,7 +5,6 @@
 --- only, nothing calls them yet. See
 --- docs/superpowers/specs/2026-08-10-characters-module-design.md.
 CharacterService = {}
-CharacterService.CHARACTER_SLOT_LIMIT = 3
 CharacterService.sessionCharacters = {} -- source -> character_id, runtime only, set by a future UI-wiring pass
 
 --- @param accountId number
@@ -18,12 +17,26 @@ function CharacterService.list(accountId)
         :getSync()
 end
 
-local function findFreeSlot(accountId)
+--- The slot limit lives on accounts.max_characters (added by this module's
+--- own migration, since the limit is a characters-module concept, not an
+--- oblsk_accounts one), not a constant here, so an admin can raise or lower
+--- one specific account's limit without a code change.
+--- @param accountId number
+--- @return number|nil nil if the account doesn't exist
+local function getMaxCharacters(accountId)
+    local account = QueryBuilder.new('accounts'):where('id', accountId):firstSync()
+    if not account then
+        return nil
+    end
+    return account.max_characters
+end
+
+local function findFreeSlot(accountId, maxCharacters)
     local taken = {}
     for _, character in ipairs(CharacterService.list(accountId)) do
         taken[character.slot] = true
     end
-    for slot = 0, CharacterService.CHARACTER_SLOT_LIMIT - 1 do
+    for slot = 0, maxCharacters - 1 do
         if not taken[slot] then
             return slot
         end
@@ -33,14 +46,19 @@ end
 
 --- Creates a Character in the lowest free slot for this account, plus a
 --- blank CharacterAppearance linked to it. Returns an error instead of
---- creating anything once CHARACTER_SLOT_LIMIT non-deleted characters
---- already exist for this account.
+--- creating anything once accounts.max_characters non-deleted characters
+--- already exist for this account, or if the account doesn't exist.
 --- @param accountId number
 --- @param attributes table { first_name, last_name, gender, dob, bio }
 --- @return Character|nil
 --- @return string|nil err set only when the return is nil
 function CharacterService.create(accountId, attributes)
-    local slot = findFreeSlot(accountId)
+    local maxCharacters = getMaxCharacters(accountId)
+    if not maxCharacters then
+        return nil, 'account not found'
+    end
+
+    local slot = findFreeSlot(accountId, maxCharacters)
     if not slot then
         return nil, 'no free character slots'
     end
