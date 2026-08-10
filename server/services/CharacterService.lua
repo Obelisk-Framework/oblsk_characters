@@ -1,6 +1,8 @@
 --- CharacterService (server) - a slot-limited character-select data layer
---- on top of Account. Identity and looks only: no position/health/money,
---- no event handlers, no native calls. See
+--- on top of Account, plus vitals/position storage (health, armor, air,
+--- x/y/z, dimension, food/drink/stamina). No event handlers, no native
+--- calls, no sync to a live ped yet, getVitals/saveVitals are a data layer
+--- only, nothing calls them yet. See
 --- docs/superpowers/specs/2026-08-10-characters-module-design.md.
 CharacterService = {}
 CharacterService.CHARACTER_SLOT_LIMIT = 3
@@ -77,6 +79,32 @@ end
 --- @return number|nil
 function CharacterService.getActiveCharacterId(source)
     return CharacterService.sessionCharacters[source]
+end
+
+local VITAL_FIELDS = {
+    'health', 'armor', 'air', 'x', 'y', 'z', 'dimension', 'food', 'drink', 'stamina',
+}
+
+--- @param characterId number
+--- @return table|nil { health, armor, air, x, y, z, dimension, food, drink, stamina }, nil if the character doesn't exist
+function CharacterService.getVitals(characterId)
+    local character = QueryBuilder.new('characters'):where('id', characterId):firstSync()
+    if not character then
+        return nil
+    end
+
+    local vitals = {}
+    for _, field in ipairs(VITAL_FIELDS) do
+        vitals[field] = character[field]
+    end
+    return vitals
+end
+
+--- Partial update: only the keys present in `vitals` are written.
+--- @param characterId number
+--- @param vitals table any subset of { health, armor, air, x, y, z, dimension, food, drink, stamina }
+function CharacterService.saveVitals(characterId, vitals)
+    QueryBuilder.new('characters'):where('id', characterId):update(vitals)
 end
 
 return CharacterService

@@ -164,6 +164,45 @@ test('getActiveCharacterId: returns the value set by setActiveCharacterId', func
 end)
 
 --------------------------------------------------------------------------------
+-- getVitals / saveVitals
+--------------------------------------------------------------------------------
+
+test('getVitals: returns nil for a nonexistent character', function()
+    withFakeDb(function()
+        eq(CharacterService.getVitals(999), nil)
+    end)
+end)
+
+test('getVitals: returns all vital fields for an existing character', function()
+    withFakeDb(function(tables)
+        local character = CharacterService.create(1, { first_name = 'John', last_name = 'Doe' })
+        CharacterService.saveVitals(character.attributes.id, {
+            health = 200, armor = 0, air = 100, x = 0, y = 0, z = 72, dimension = 0,
+        })
+
+        local vitals = CharacterService.getVitals(character.attributes.id)
+        eq(vitals.health, 200)
+        eq(vitals.armor, 0)
+        eq(vitals.air, 100)
+        eq(vitals.z, 72)
+        eq(vitals.dimension, 0)
+        eq(vitals.food, nil)
+    end)
+end)
+
+test('saveVitals: a partial update only touches the given keys', function()
+    withFakeDb(function()
+        local character = CharacterService.create(1, { first_name = 'John', last_name = 'Doe' })
+        CharacterService.saveVitals(character.attributes.id, { health = 200, armor = 0 })
+        CharacterService.saveVitals(character.attributes.id, { health = 150 })
+
+        local vitals = CharacterService.getVitals(character.attributes.id)
+        eq(vitals.health, 150)
+        eq(vitals.armor, 0)
+    end)
+end)
+
+--------------------------------------------------------------------------------
 -- Runner
 --------------------------------------------------------------------------------
 print('Running CharacterService unit tests\n')

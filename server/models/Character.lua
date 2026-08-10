@@ -7,7 +7,10 @@ Character = BaseModel:extend('characters')
 
 Character.primaryKey = 'id'
 Character.timestamps = true
-Character.fillable = { 'account_id', 'slot', 'first_name', 'last_name', 'gender', 'dob', 'bio', 'last_played_at', 'deleted_at' }
+Character.fillable = {
+    'account_id', 'slot', 'first_name', 'last_name', 'gender', 'dob', 'bio', 'last_played_at', 'deleted_at',
+    'health', 'armor', 'air', 'x', 'y', 'z', 'dimension', 'food', 'drink', 'stamina',
+}
 Character.hidden = {}
 
 function Character:accountRelation()
