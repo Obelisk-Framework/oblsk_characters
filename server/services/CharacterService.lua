@@ -99,6 +99,20 @@ function CharacterService.getActiveCharacterId(source)
     return CharacterService.sessionCharacters[source]
 end
 
+--- Reverse lookup: is this character currently online, and if so under which
+--- source. Generically useful for any module that needs to reach a specific
+--- character's live session (e.g. routing a phone call), not phone-specific.
+--- @param characterId number
+--- @return number|nil source, nil if that character isn't an active session
+function CharacterService.findSourceByCharacterId(characterId)
+    for source, activeId in pairs(CharacterService.sessionCharacters) do
+        if activeId == characterId then
+            return source
+        end
+    end
+    return nil
+end
+
 local VITAL_FIELDS = {
     'health', 'armor', 'air', 'x', 'y', 'z', 'dimension', 'food', 'drink', 'stamina',
 }

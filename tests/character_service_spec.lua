@@ -195,6 +195,16 @@ test('getActiveCharacterId: returns the value set by setActiveCharacterId', func
     CharacterService.sessionCharacters[42] = nil
 end)
 
+test('findSourceByCharacterId: returns the source for an online character', function()
+    CharacterService.setActiveCharacterId(42, 7)
+    eq(CharacterService.findSourceByCharacterId(7), 42)
+    CharacterService.sessionCharacters[42] = nil
+end)
+
+test('findSourceByCharacterId: returns nil for a character with no active session', function()
+    eq(CharacterService.findSourceByCharacterId(999), nil)
+end)
+
 --------------------------------------------------------------------------------
 -- getVitals / saveVitals
 --------------------------------------------------------------------------------
