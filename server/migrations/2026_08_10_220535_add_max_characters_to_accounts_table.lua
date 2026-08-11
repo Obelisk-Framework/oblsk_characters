@@ -6,7 +6,7 @@
 return {
     up = function()
         Schema.table('accounts', function(table)
-            table:integer('max_characters'):notNullable():default(3)
+            table:integer('max_characters'):default(3)
         end)
 
         print('[Migration] Added max_characters column to accounts table')

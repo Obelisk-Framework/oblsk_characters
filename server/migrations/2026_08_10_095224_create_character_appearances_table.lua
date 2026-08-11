@@ -3,9 +3,9 @@ return {
     up = function()
         Schema.create('character_appearances', function(table)
             table:id()
-            table:integer('character_id'):notNullable():unique()
-            table:string('ped_model', 100)
-            table:json('data')
+            table:integer('character_id'):unique()
+            table:string('ped_model', 100):nullable()
+            table:json('data'):nullable()
             table:timestamps()
 
             table:foreign('character_id'):references('id'):on('characters'):onDelete('CASCADE')
