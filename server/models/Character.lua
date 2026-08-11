@@ -21,4 +21,6 @@ function Character:appearanceRelation()
     return self:hasOne(CharacterAppearance, 'character_id', 'id')
 end
 
+HasPermissions.apply(Character, 'character')
+
 return Character
