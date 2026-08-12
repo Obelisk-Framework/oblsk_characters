@@ -79,6 +79,8 @@ function CharacterService.create(accountId, attributes)
         data = {},
     })
 
+    Obelisk.emit('character:created', character)
+
     return character
 end
 
