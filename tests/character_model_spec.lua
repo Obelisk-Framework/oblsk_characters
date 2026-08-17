@@ -48,7 +48,7 @@ test('a Character instance can grant and check its own permission', function()
     QueryBuilder = makeFakeQueryBuilderModule(tables)
 
     local ok, err = pcall(function()
-        local instance = Character:findSync(11)
+        local instance = Character:find(11)
         eq(instance:can('manage_bank'), false)
         instance:grant('manage_bank')
         truthy(instance:can('manage_bank'))

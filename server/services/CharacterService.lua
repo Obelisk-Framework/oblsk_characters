@@ -14,7 +14,7 @@ function CharacterService.list(accountId)
         :where('account_id', accountId)
         :whereNull('deleted_at')
         :orderBy('slot', 'asc')
-        :getSync()
+        :get()
 end
 
 --- The slot limit lives on accounts.max_characters (added by this module's
@@ -24,7 +24,7 @@ end
 --- @param accountId number
 --- @return number|nil nil if the account doesn't exist
 local function getMaxCharacters(accountId)
-    local account = QueryBuilder.new('accounts'):where('id', accountId):firstSync()
+    local account = QueryBuilder.new('accounts'):where('id', accountId):first()
     if not account then
         return nil
     end
@@ -63,7 +63,7 @@ function CharacterService.create(accountId, attributes)
         return nil, 'no free character slots'
     end
 
-    local character = Character:createSync({
+    local character = Character:create({
         account_id = accountId,
         slot = slot,
         first_name = attributes.first_name,
@@ -73,7 +73,7 @@ function CharacterService.create(accountId, attributes)
         bio = attributes.bio,
     })
 
-    CharacterAppearance:createSync({
+    CharacterAppearance:create({
         character_id = character.attributes.id,
         ped_model = attributes.ped_model or 'mp_m_freemode_01',
         data = {},
@@ -122,7 +122,7 @@ local VITAL_FIELDS = {
 --- @param characterId number
 --- @return table|nil { health, armor, air, x, y, z, dimension, food, drink, stamina }, nil if the character doesn't exist
 function CharacterService.getVitals(characterId)
-    local character = QueryBuilder.new('characters'):where('id', characterId):firstSync()
+    local character = QueryBuilder.new('characters'):where('id', characterId):first()
     if not character then
         return nil
     end
