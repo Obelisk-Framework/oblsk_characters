@@ -2,7 +2,7 @@
 return {
     up = function()
         Schema.table('characters', function(table)
-            table:string('fingerprint_id', 16):nullable()
+            table:string('fingerprint_id', 20):nullable()
             table:string('blood_type', 3):nullable()
         end)
         print('[Migration] Added fingerprint_id and blood_type to characters table')
