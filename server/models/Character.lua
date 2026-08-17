@@ -8,8 +8,9 @@ Character = BaseModel:extend('characters')
 Character.primaryKey = 'id'
 Character.timestamps = true
 Character.fillable = {
-    'account_id', 'slot', 'first_name', 'last_name', 'gender', 'dob', 'bio', 'last_played_at', 'deleted_at',
+    'account_id', 'slot', 'first_name', 'last_name', 'gender', 'dob', 'place_of_birth', 'bio', 'last_played_at', 'deleted_at',
     'health', 'armor', 'air', 'x', 'y', 'z', 'dimension', 'food', 'drink', 'stamina',
+    'fingerprint_id', 'blood_type',
 }
 Character.hidden = {}
 
