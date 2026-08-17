@@ -29,6 +29,9 @@ dofile(CORE_ROOT .. '/core/server/Traits/HasPermissions.lua')
 -- accountRelation() anyway.
 dofile(scriptDir .. '../server/models/Character.lua')
 dofile(scriptDir .. '../server/models/CharacterAppearance.lua')
+_G.Obelisk = _G.Obelisk or {}
+_G.Obelisk.emit = _G.Obelisk.emit or function(_eventName, _payload) end
+
 dofile(scriptDir .. '../server/services/CharacterService.lua')
 
 local makeFakeQueryBuilderModule = dofile(scriptDir .. 'support/fake_query_builder.lua')
