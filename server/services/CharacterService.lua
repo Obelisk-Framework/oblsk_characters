@@ -95,9 +95,10 @@ function CharacterService.setActiveCharacterId(source, characterId)
     CharacterService.sessionCharacters[source] = characterId
 end
 
---- @param source number
+--- @param player Player|number
 --- @return number|nil
-function CharacterService.getActiveCharacterId(source)
+function CharacterService.getActiveCharacterId(player)
+    local source = type(player) == 'number' and player or player:getSource()
     return CharacterService.sessionCharacters[source]
 end
 
