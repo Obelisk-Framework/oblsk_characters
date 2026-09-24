@@ -1,4 +1,4 @@
---- Unit tests for Character's permission and item-owner opt-ins.
+--- Unit tests for Character permissions and its item-owner identity.
 --- Run from the repository root:  lua5.4 tests/character_model_spec.lua
 local scriptDir = arg[0]:match('(.*/)') or './'
 local CORE_ROOT = scriptDir .. '../../..'
@@ -22,7 +22,6 @@ _G.Account = _G.Account or {}
 _G.CharacterAppearance = _G.CharacterAppearance or {}
 
 dofile(scriptDir .. '../server/models/Character.lua')
-dofile(CORE_ROOT .. '/modules/oblsk_items/server/services/HasItems.lua')
 
 local makeFakeQueryBuilderModule = dofile(CORE_ROOT .. '/tests/support/fake_query_builder.lua')
 

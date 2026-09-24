@@ -14,6 +14,22 @@ Character.fillable = {
 }
 Character.hidden = {}
 
+--- Return this persisted character's identity as an item owner.
+--- @return table|nil identity { type = string, id = any }
+--- @return string|nil reason
+function Character:itemOwner()
+    if self.exists ~= true then
+        return nil, 'Item owner must be persisted'
+    end
+
+    local id = self.id
+    if id == nil then
+        return nil, 'Item owner has no primary key'
+    end
+
+    return { type = 'character', id = id }, nil
+end
+
 function Character:accountRelation()
     return self:belongsTo(Account, 'account_id', 'id')
 end
@@ -23,6 +39,5 @@ function Character:appearanceRelation()
 end
 
 HasPermissions.apply(Character, 'character')
-Character.itemOwnerType = 'character'
 
 return Character
