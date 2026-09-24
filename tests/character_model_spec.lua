@@ -1,4 +1,4 @@
---- Unit tests for Character's HasPermissions wiring.
+--- Unit tests for Character's permission and item-owner opt-ins.
 --- Run from the repository root:  lua5.4 tests/character_model_spec.lua
 local scriptDir = arg[0]:match('(.*/)') or './'
 local CORE_ROOT = scriptDir .. '../../..'
@@ -14,7 +14,6 @@ dofile(CORE_ROOT .. '/core/server/ORM/BaseModel.lua')
 dofile(CORE_ROOT .. '/core/server/Models/Permission.lua')
 dofile(CORE_ROOT .. '/core/server/Services/PermissionService.lua')
 dofile(CORE_ROOT .. '/core/server/Traits/HasPermissions.lua')
-dofile(CORE_ROOT .. '/core/server/Traits/HasItems.lua')
 
 -- Character.lua declares belongsTo(Account, ...)/hasOne(CharacterAppearance, ...)
 -- relationships; the classes only need to exist as globals, never resolved
@@ -23,6 +22,7 @@ _G.Account = _G.Account or {}
 _G.CharacterAppearance = _G.CharacterAppearance or {}
 
 dofile(scriptDir .. '../server/models/Character.lua')
+dofile(CORE_ROOT .. '/modules/oblsk_items/server/services/HasItems.lua')
 
 local makeFakeQueryBuilderModule = dofile(CORE_ROOT .. '/tests/support/fake_query_builder.lua')
 

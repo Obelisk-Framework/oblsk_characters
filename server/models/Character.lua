@@ -23,6 +23,6 @@ function Character:appearanceRelation()
 end
 
 HasPermissions.apply(Character, 'character')
-HasItems.apply(Character, 'character')
+Character.itemOwnerType = 'character'
 
 return Character
