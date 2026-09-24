@@ -23,5 +23,6 @@ function Character:appearanceRelation()
 end
 
 HasPermissions.apply(Character, 'character')
+HasItems.apply(Character, 'character')
 
 return Character

@@ -14,6 +14,7 @@ dofile(CORE_ROOT .. '/core/server/ORM/BaseModel.lua')
 dofile(CORE_ROOT .. '/core/server/Models/Permission.lua')
 dofile(CORE_ROOT .. '/core/server/Services/PermissionService.lua')
 dofile(CORE_ROOT .. '/core/server/Traits/HasPermissions.lua')
+dofile(CORE_ROOT .. '/core/server/Traits/HasItems.lua')
 
 -- Character.lua declares belongsTo(Account, ...)/hasOne(CharacterAppearance, ...)
 -- relationships; the classes only need to exist as globals, never resolved
@@ -41,6 +42,20 @@ end
 
 test('Character.permissionType is "character"', function()
     eq(Character.permissionType, 'character')
+end)
+
+test('a persisted Character exposes its stable item-owner identity', function()
+    local character = Character.new({ id = 11 })
+    character.exists = true
+    local owner = character:itemOwner()
+    eq(owner.type, 'character')
+    eq(owner.id, 11)
+end)
+
+test('an unsaved Character cannot own items', function()
+    local owner, reason = Character.new({ id = 11 }):itemOwner()
+    eq(owner, nil)
+    eq(reason, 'Item owner must be persisted')
 end)
 
 test('a Character instance can grant and check its own permission', function()

@@ -21,6 +21,7 @@ dofile(CORE_ROOT .. '/core/server/ORM/BaseModel.lua')
 dofile(CORE_ROOT .. '/core/server/Models/Permission.lua')
 dofile(CORE_ROOT .. '/core/server/Services/PermissionService.lua')
 dofile(CORE_ROOT .. '/core/server/Traits/HasPermissions.lua')
+dofile(CORE_ROOT .. '/core/server/Traits/HasItems.lua')
 
 -- Character:accountRelation() references the global Account, from the
 -- separate oblsk_accounts module, never loaded here. That reference is
