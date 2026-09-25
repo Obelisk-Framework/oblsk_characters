@@ -1,4 +1,4 @@
---- Unit tests for Character's HasPermissions wiring.
+--- Unit tests for Character permissions and its item-owner identity.
 --- Run from the repository root:  lua5.4 tests/character_model_spec.lua
 local scriptDir = arg[0]:match('(.*/)') or './'
 local CORE_ROOT = scriptDir .. '../../..'
@@ -41,6 +41,20 @@ end
 
 test('Character.permissionType is "character"', function()
     eq(Character.permissionType, 'character')
+end)
+
+test('a persisted Character exposes its stable item-owner identity', function()
+    local character = Character.new({ id = 11 })
+    character.exists = true
+    local owner = character:itemOwner()
+    eq(owner.type, 'character')
+    eq(owner.id, 11)
+end)
+
+test('an unsaved Character cannot own items', function()
+    local owner, reason = Character.new({ id = 11 }):itemOwner()
+    eq(owner, nil)
+    eq(reason, 'Item owner must be persisted')
 end)
 
 test('a Character instance can grant and check its own permission', function()
